@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Query, Schema, model } from "mongoose";
 import { IUser } from "./user.interface";
 
 const userSchema = new Schema<IUser>({
@@ -29,6 +29,11 @@ const userSchema = new Schema<IUser>({
       enum: ["active", "inactive"],
       default: "active",
    },
+});
+
+userSchema.pre(/^find/, function (this: Query<IUser, Document>, next) {
+   this.find({ userStatus: { $eq: "active" } });
+   next();
 });
 
 export const UserModel = model<IUser>("User", userSchema);
